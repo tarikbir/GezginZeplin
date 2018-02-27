@@ -18,7 +18,9 @@ namespace GezginZeplin
             while (!cities.EndOfStream)
             {
                 string line = cities.ReadLine();
-                Console.WriteLine(line);
+                double[] tempString = Array.ConvertAll(line.Split(','), Double.Parse);
+                City c = new City(tempString[0]/10000,tempString[1]/10000,(int)tempString[2],(int)tempString[3]);
+                c.writeCity(); //DEBUG
             }
 
             Console.Read();

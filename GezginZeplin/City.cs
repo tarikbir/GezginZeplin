@@ -8,19 +8,24 @@ namespace GezginZeplin
 {
     class City
     {
-        double lat;
-        double lng;
-        int plaka;
-        int rakim; //buzlu olsun
+        private double lat;
+        private double lng;
+        private int plate;
+        private int altitude;
 
         public City(){}
 
-        public City(double lat, double lng, int plaka, int rakim)
+        public City(double lat, double lng, int plate, int altitude)
         {
             this.lat = lat;
             this.lng = lng;
-            this.plaka = plaka;
-            this.rakim = rakim;
+            this.plate = plate;
+            this.altitude = altitude;
+        }
+
+        public void writeCity()
+        {
+            Console.WriteLine("LAT: " + this.lat + " LONG: " + this.lng + " PLATE: " + this.plate + " ALT: " + this.altitude);
         }
     }
 }
