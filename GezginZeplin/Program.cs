@@ -11,7 +11,7 @@ namespace GezginZeplin
     {
         static void Main(string[] args)
         {
-            StreamReader adjecent = new StreamReader("adjacent.txt");
+            StreamReader adjacent = new StreamReader("adjacent.txt");
             StreamReader cities = new StreamReader("cities.txt");
             cities.ReadLine();
 
@@ -20,6 +20,8 @@ namespace GezginZeplin
                 string line = cities.ReadLine();
                 Console.WriteLine(line);
             }
+
+            Console.Read();
         }
     }
 }
