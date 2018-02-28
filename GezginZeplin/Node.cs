@@ -19,8 +19,19 @@ namespace GezginZeplin
 
         public void addConnection(Node node)
         {
-            
+            adjacent.AddLast(node);
         }
+
+        public void showConnection()
+        {
+            Console.Write(adjacent);
+            for (int i = 0; i < adjacent.Count; i++)
+            {
+                Console.Write(adjacent.ElementAt(i).nodeCity.plate + " ");
+            }
+        }
+
+        public string ToString => nodeCity.plate.ToString();
 
         public double distanceTo(Node node)
         {

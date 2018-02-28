@@ -71,7 +71,9 @@ namespace GezginZeplin
                     }
                 }
             }
-            
+
+            cityArray[0].showConnection();
+
             //END OF PROGRAM
             Console.Read();
         }
