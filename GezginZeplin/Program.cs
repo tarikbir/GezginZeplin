@@ -54,7 +54,7 @@ namespace GezginZeplin
                 }
             }
 
-            cityArray[53].distanceTo(cityArray[40]); //DEBUG, WILL DLEETE
+            cityArray[53].distanceTo(cityArray[40]); //DEBUG, WILL DELETE
             
             //File reading, connecting nodes
             using (StreamReader adjacent = new StreamReader(adjacentFileName))
@@ -72,7 +72,7 @@ namespace GezginZeplin
                 }
             }
 
-            cityArray[0].showConnection();
+            cityArray[0].showConnection(); //DEBUG, WILL DELETE
 
             //END OF PROGRAM
             Console.Read();
