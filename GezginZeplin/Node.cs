@@ -9,8 +9,8 @@ namespace GezginZeplin
     class Node
     {
 
-        City nodeCity;
-        LinkedList<Node> adjacent = new LinkedList<Node>();
+        public City nodeCity;
+        public LinkedList<Node> adjacent = new LinkedList<Node>();
 
         public Node(City nodeCity)
         {

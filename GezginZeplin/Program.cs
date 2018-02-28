@@ -9,6 +9,16 @@ namespace GezginZeplin
 {
     class Program
     {
+        public static Node findCity(Node[] array, int plate)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i].nodeCity.plate == plate)
+                    return array[i];
+            }
+            return null;
+        }
+
         static void Main(string[] args)
         {
             //Initialization
@@ -45,7 +55,7 @@ namespace GezginZeplin
             }
 
             cityArray[53].distanceTo(cityArray[40]); //DEBUG, WILL DLEETE
-            /*
+            
             //File reading, connecting nodes
             using (StreamReader adjacent = new StreamReader(adjacentFileName))
             {
@@ -54,10 +64,14 @@ namespace GezginZeplin
                 while (!adjacent.EndOfStream)
                 {
                     string line = adjacent.ReadLine();
-                    double[] tempString = Array.ConvertAll(line.Split(','), Double.Parse);
+                    int[] tempString = Array.ConvertAll(line.Split(','),Int32.Parse);
+                    for (int plate = 1; plate < tempString.Length; plate++)
+                    {
+                        cityArray[tempString[0] - 1].addConnection(findCity(cityArray, tempString[plate]));
+                    }
                 }
             }
-            */
+            
             //END OF PROGRAM
             Console.Read();
         }
