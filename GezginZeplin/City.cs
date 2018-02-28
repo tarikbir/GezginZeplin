@@ -8,10 +8,10 @@ namespace GezginZeplin
 {
     class City
     {
-        private double lat;
-        private double lng;
-        private int plate;
-        private int altitude;
+        public double lng;
+        public double lat;
+        public int plate;
+        public int altitude;
 
         public City(){}
 

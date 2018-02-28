@@ -14,7 +14,7 @@ namespace GezginZeplin
             //Initialization
             string citiesFileName = "cities.txt";
             string adjacentFileName = "adjacent.txt";
-            City[] cityArray = new City[81];
+            Node[] cityArray = new Node[81];
 
             //File checks
             if (!File.Exists(citiesFileName))
@@ -39,17 +39,25 @@ namespace GezginZeplin
                 {
                     string line = cities.ReadLine();
                     double[] tempString = Array.ConvertAll(line.Split(','), Double.Parse);
-                    cityArray[i++] = new City(tempString[0] / 10000, tempString[1] / 10000, (int)tempString[2], (int)tempString[3]);
-                    cityArray[i-1].writeCity(); //DEBUG, DELETE LATER
+                    City c = new City(tempString[0] / 10000, tempString[1] / 10000, (int)tempString[2], (int)tempString[3]);
+                    cityArray[i++] = new Node(c);
                 }
             }
 
+            cityArray[53].distanceTo(cityArray[40]); //DEBUG, WILL DLEETE
+            /*
             //File reading, connecting nodes
             using (StreamReader adjacent = new StreamReader(adjacentFileName))
             {
-
+                adjacent.ReadLine(); //Pass the first line
+                int i = 0;
+                while (!adjacent.EndOfStream)
+                {
+                    string line = adjacent.ReadLine();
+                    double[] tempString = Array.ConvertAll(line.Split(','), Double.Parse);
+                }
             }
-
+            */
             //END OF PROGRAM
             Console.Read();
         }
