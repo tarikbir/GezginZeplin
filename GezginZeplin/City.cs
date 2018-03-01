@@ -22,10 +22,5 @@ namespace GezginZeplin
             this.plate = plate;
             this.altitude = altitude;
         }
-
-        public void writeCity()
-        {
-            Console.WriteLine("LAT: " + this.lat + " LONG: " + this.lng + " PLATE: " + this.plate + " ALT: " + this.altitude);
-        }
     }
 }
