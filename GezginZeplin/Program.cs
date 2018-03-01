@@ -21,53 +21,71 @@ namespace GezginZeplin
             return null;
         }
 
-        public static void shortestPath(Node start, Node end)
+        public static LinkedList<Node> shortestPath(Node start, Node end)
         {
             double[,] weights = new double[81,2]; //CITY, INFO
             bool[] visited = new bool[81];
             bool done = false;
             Node current = start;
+            LinkedList<Node> citiesToReturn = new LinkedList<Node>();
             //Initialize
             for (int i = 0; i < 81; i++){ weights[i,0] = Double.MaxValue; }
             weights[current.city.plate - 1, 0] = 0;
             weights[current.city.plate - 1, 1] = current.city.plate;
             visited[current.city.plate - 1] = true;
-            Console.WriteLine("Start plate: " + current.city.plate + " End plate: " + end.city.plate);
+            //Console.WriteLine("Start plate: " + current.city.plate + " End plate: " + end.city.plate);
             //Main loop
             while (!done)
             {
-                int nextPlate = current.city.plate;
-                Console.WriteLine();
-                //Getting the weights of path
+                //Getting the weights of adjacent cities
                 for (int i = 0; i < current.adjacent.Count; i++)
                 {
-                    int thisPlate = current.adjacent.ElementAt(i);
-                    double distance = current.distanceTo(findCity(thisPlate));
-                    if (distance < weights[thisPlate-1, 0])
+                    int adjPlate = current.adjacent.ElementAt(i);
+                    double distance = current.distanceTo(findCity(adjPlate));
+                    if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
-                        weights[thisPlate - 1, 0] = weights[thisPlate-1,0]+distance; //WEIGHT CALCULATION
-                        weights[thisPlate - 1, 1] = current.city.plate; //FROM
+                        weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
+                        weights[adjPlate - 1, 1] = current.city.plate; //FROM
+                        //Console.WriteLine("Adjacent (" + current.city.plate + ") found at: " + adjPlate + " by the distance of " + weights[adjPlate - 1, 0] + " kms");
                     }
-                    Console.WriteLine("Adjacent (" + current.city.plate + ") found at: " + thisPlate+" by the distance of "+distance+" kms");
                 }
+
                 //Find the minimum weight
                 double min = Double.MaxValue;
+                int nextPlate = current.city.plate;
                 for (int i = 0; i < 81; i++)
                 {
                     if (weights[i,0] < min && !visited[i])
                     {
-                        weights[i, 0] = min;
+                        min = weights[i, 0];
                         nextPlate = i+1;
                     }
                 }
-                Console.WriteLine("Next city is: " + nextPlate);
+                //Console.WriteLine("Next city is: " + nextPlate+"\n");
+
                 //Initialize next iteration.
                 visited[nextPlate - 1] = true;
                 current = findCity(nextPlate);
+
                 //Check for the end of the loop.
                 done = true;
                 for (int i = 0; i < 81; i++){ if (weights[i, 0] == Double.MaxValue) { done = false;  break; } }
             }
+            //Output
+            int endPlate = end.city.plate;
+            int writingPlate = endPlate;
+            //Console.WriteLine("Fastest route: \n");
+            //Console.Write(writingPlate + " ");
+            citiesToReturn.AddLast(findCity(writingPlate));
+
+            do
+            {
+                writingPlate = (int)weights[writingPlate - 1, 1];
+                citiesToReturn.AddLast(findCity(writingPlate));
+                //Console.Write(writingPlate+" ");
+            } while (writingPlate != start.city.plate);
+
+            return citiesToReturn;
         }
 
         static void Main(string[] args)
@@ -75,6 +93,9 @@ namespace GezginZeplin
             //Initialization
             string citiesFileName = "cities.txt";
             string adjacentFileName = "adjacent.txt";
+            LinkedList<Node> route = new LinkedList<Node>();
+            int startPlate=34;
+            int endPlate=41;
 
             //File checks
             if (!File.Exists(citiesFileName))
@@ -120,7 +141,7 @@ namespace GezginZeplin
                 }
             }
 
-            shortestPath(cityArray[33], cityArray[21]);
+            route = shortestPath(cityArray[startPlate-1], cityArray[endPlate-1]);
 
             //END OF PROGRAM
             Console.Read();
