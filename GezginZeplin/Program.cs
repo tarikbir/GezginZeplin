@@ -21,7 +21,7 @@ namespace GezginZeplin
             return null;
         }
 
-        public static LinkedList<Node> shortestPath(Node start, Node end)
+        public static LinkedList<Node> shortestPath(Node start, Node end, int yolcu)
         {
             double[,] weights = new double[81,2]; //CITY, INFO
             bool[] visited = new bool[81];
@@ -42,6 +42,7 @@ namespace GezginZeplin
                 {
                     int adjPlate = current.adjacent.ElementAt(i);
                     double distance = current.distanceTo(findCity(adjPlate));
+                    double height = current.distanceTo(findCity(adjPlate))*Math.Tan(Math.PI/180*(80-yolcu));
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
                         weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
@@ -74,15 +75,15 @@ namespace GezginZeplin
             //Output
             int endPlate = end.city.plate;
             int writingPlate = endPlate;
-            //Console.WriteLine("Fastest route: \n");
-            //Console.Write(writingPlate + " ");
+            Console.WriteLine("Fastest route: \n");
+            Console.Write(writingPlate + " ");
             citiesToReturn.AddLast(findCity(writingPlate));
 
             do
             {
                 writingPlate = (int)weights[writingPlate - 1, 1];
                 citiesToReturn.AddLast(findCity(writingPlate));
-                //Console.Write(writingPlate+" ");
+                Console.Write(writingPlate+" ");
             } while (writingPlate != start.city.plate);
 
             return citiesToReturn;
@@ -93,7 +94,6 @@ namespace GezginZeplin
             //Initialization
             string citiesFileName = "cities.txt";
             string adjacentFileName = "adjacent.txt";
-            LinkedList<Node> route = new LinkedList<Node>();
             int startPlate=34;
             int endPlate=41;
 
@@ -141,7 +141,14 @@ namespace GezginZeplin
                 }
             }
 
-            route = shortestPath(cityArray[startPlate-1], cityArray[endPlate-1]);
+            //MAXIMUM PROFIT
+            int cost = 100;
+            for (int yolcu = 5; yolcu <= 50; yolcu++)
+            {
+                LinkedList<Node> route = shortestPath(findCity(startPlate), findCity(endPlate), yolcu);
+
+
+            }
 
             //END OF PROGRAM
             Console.Read();
