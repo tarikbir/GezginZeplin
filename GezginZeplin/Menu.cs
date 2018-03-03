@@ -31,7 +31,7 @@ namespace GezginZeplin
                 AutoSize = true
             };
 
-            mapImage.Controls.Add(pin);            
+            mapImage.Controls.Add(pin);
             pin.BackColor = Color.Transparent;
             pin.Image = Properties.Resources.pin;
             pin.Controls.Add(pinPlate);
@@ -65,6 +65,7 @@ namespace GezginZeplin
             outputTextBox.Text = "Route: " + Program.getList(route);
 
             //Redraw pins that are not lit with the selection.
+            mapImage.Refresh();
             for (int i = 1; i <= Program.cityArray.Length; i++)
             {
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
