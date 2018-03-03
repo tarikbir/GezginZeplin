@@ -159,6 +159,7 @@
             this.mapImage.Size = new System.Drawing.Size(974, 427);
             this.mapImage.TabIndex = 0;
             this.mapImage.TabStop = false;
+            this.mapImage.Paint += new System.Windows.Forms.PaintEventHandler(this.mapImage_Paint);
             // 
             // programBindingSource
             // 

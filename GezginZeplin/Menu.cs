@@ -41,6 +41,8 @@ namespace GezginZeplin
         public int endPlate=1;
         public int passenger=5;
         public static int pinCount = 0;
+        private Graphics g;
+        private Pen pen = new Pen(Color.DarkOliveGreen, 2f);
 
         public Menu()
         {
@@ -57,6 +59,8 @@ namespace GezginZeplin
 
         private void buttonDrawRoad_Click(object sender, EventArgs e)
         {
+            g = mapImage.CreateGraphics();
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
             LinkedList<Node> route = Program.shortestPath(Program.findCity(startPlate), Program.findCity(endPlate), passenger);
             outputTextBox.Text = "Route: " + Program.getList(route);
 
@@ -66,11 +70,19 @@ namespace GezginZeplin
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
                 pin.Image = Properties.Resources.pin;
             }
-            //Light the new route pins.
+            //Light the new route pins. Draw the lines between them
+            int x=0, y=0;
             for (int i = 0; i < route.Count; i++)
             {
-                PictureBox pin = (PictureBox)mapImage.Controls["pin" + (route.ElementAt(i).city.plate)];
+                Node n = route.ElementAt(i);
+                PictureBox pin = (PictureBox)mapImage.Controls["pin" + (n.city.plate)];
                 pin.Image = Properties.Resources.pinLit;
+                if (i!=0)
+                {
+                    g.DrawLine(pen, x, y, pin.Location.X+12, pin.Location.Y+12);
+                }
+                x = pin.Location.X+12;
+                y = pin.Location.Y+12;
             }
         }
 
@@ -156,6 +168,11 @@ namespace GezginZeplin
         private void textBoxPassengers_Leave(object sender, EventArgs e)
         {
             textBoxPassengers.Text = passenger.ToString("D2");
+        }
+
+        private void mapImage_Paint(object sender, PaintEventArgs e)
+        {
+            
         }
     }
 }
