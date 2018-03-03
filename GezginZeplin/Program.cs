@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GezginZeplin
 {
@@ -13,6 +14,7 @@ namespace GezginZeplin
 
         public static Node findCity(int plate)
         {
+            //Console.WriteLine("findCity() searching for :" + plate);
             for (int i = 0; i < cityArray.Length; i++)
             {
                 if (cityArray[i].city.plate == plate)
@@ -75,18 +77,29 @@ namespace GezginZeplin
             //Output
             int endPlate = end.city.plate;
             int writingPlate = endPlate;
-            Console.WriteLine("Fastest route: \n");
-            Console.Write(writingPlate + " ");
+            //Console.WriteLine("Fastest route: \n");
+            //Console.Write(writingPlate + " ");
             citiesToReturn.AddLast(findCity(writingPlate));
 
             do
             {
                 writingPlate = (int)weights[writingPlate - 1, 1];
                 citiesToReturn.AddLast(findCity(writingPlate));
-                Console.Write(writingPlate+" ");
+                //Console.Write(writingPlate+" ");
             } while (writingPlate != start.city.plate);
 
             return citiesToReturn;
+        }
+
+        public static string getList(LinkedList<Node> array)
+        {
+            string s = "";
+            for (int i = 0; i < array.Count; i++)
+            {
+                s = s + array.ElementAt(i).ToString + " ";
+            }
+            Console.WriteLine("getList() returns :"+s);
+            return s;
         }
 
         static void Main(string[] args)
@@ -94,8 +107,6 @@ namespace GezginZeplin
             //Initialization
             string citiesFileName = "cities.txt";
             string adjacentFileName = "adjacent.txt";
-            int startPlate=34;
-            int endPlate=41;
 
             //File checks
             if (!File.Exists(citiesFileName))
@@ -141,14 +152,14 @@ namespace GezginZeplin
                 }
             }
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Menu());
+
             //MAXIMUM PROFIT
             int cost = 100;
             for (int yolcu = 5; yolcu <= 50; yolcu++)
-            {
-                LinkedList<Node> route = shortestPath(findCity(startPlate), findCity(endPlate), yolcu);
-
-
-            }
+            { }
 
             //END OF PROGRAM
             Console.Read();
