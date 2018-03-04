@@ -25,7 +25,7 @@ namespace GezginZeplin
 
         public static LinkedList<Node> shortestPath(Node start, Node end, int yolcu)
         {
-            double[,] weights = new double[81,2]; //CITY, INFO
+            double[,] weights = new double[81,2]; //PLATE, WEIGHT/PREV.NODE
             bool[] visited = new bool[81];
             bool done = false;
             Node current = start;
@@ -35,7 +35,7 @@ namespace GezginZeplin
             weights[current.city.plate - 1, 0] = 0;
             weights[current.city.plate - 1, 1] = current.city.plate;
             visited[current.city.plate - 1] = true;
-            //Console.WriteLine("Start plate: " + current.city.plate + " End plate: " + end.city.plate);
+            Console.WriteLine("DEBUG: Start plate: " + current.city.plate + " | End plate: " + end.city.plate);
             //Main loop
             while (!done)
             {
@@ -43,8 +43,8 @@ namespace GezginZeplin
                 for (int i = 0; i < current.adjacent.Count; i++)
                 {
                     int adjPlate = current.adjacent.ElementAt(i);
-                    double distance = current.distanceTo(findCity(adjPlate));
-                    double height = current.distanceTo(findCity(adjPlate))*Math.Tan(Math.PI/180*(80-yolcu));
+                    double distance = current.distanceTo(findCity(adjPlate)); //Horizontal distance
+                    double height = distance*Math.Tan(Math.PI/180*(80-yolcu)); //Vertical distance
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
                         weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
@@ -70,7 +70,7 @@ namespace GezginZeplin
                 visited[nextPlate - 1] = true;
                 current = findCity(nextPlate);
 
-                //Check for the end of the loop.
+                //Check for the end of the loop (Travel to each city in array).
                 done = true;
                 for (int i = 0; i < 81; i++){ if (weights[i, 0] == Double.MaxValue) { done = false;  break; } }
             }
@@ -93,12 +93,15 @@ namespace GezginZeplin
 
         public static string getList(LinkedList<Node> array)
         {
+            if (array == null) return "Cannot travel.";
             string s = "";
-            for (int i = 0; i < array.Count; i++)
+            int n = array.Count;
+            for (int i = n-1; i > 0; i--)
             {
-                s = s + array.ElementAt(i).ToString + " ";
+                s = s + array.ElementAt(i).ToString + " > "; //City plates except 0.
             }
-            Console.WriteLine("getList() returns :"+s);
+            s = s + array.ElementAt(0).ToString; //Last one without the character ">".
+            Console.WriteLine("DEBUG: getList() returns :"+s);
             return s;
         }
 
@@ -155,11 +158,6 @@ namespace GezginZeplin
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Menu());
-
-            //MAXIMUM PROFIT
-            int cost = 100;
-            for (int yolcu = 5; yolcu <= 50; yolcu++)
-            { }
 
             //END OF PROGRAM
             Console.Read();

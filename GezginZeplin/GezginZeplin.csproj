@@ -82,6 +82,8 @@
     <Content Include="pin.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="pinLitE.png" />
+    <None Include="pinLitS.png" />
     <None Include="pinLit.png" />
     <None Include="Resources\map.png" />
   </ItemGroup>

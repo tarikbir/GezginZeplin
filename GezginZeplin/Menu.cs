@@ -52,35 +52,44 @@ namespace GezginZeplin
                 int y =  427 - (int)((Program.cityArray[i].city.lat-35.7465)*66.394);
                 int x = (int)((Program.cityArray[i].city.lng-25.9872)*51.6308);
                 drawPin(x, y, i+1);
-                //Console.WriteLine(Program.cityArray[i].city.plate + " is drawn at (" + x + "," + y + ").");
             }
-            Console.WriteLine("Menu initialized.");
+            Console.WriteLine("DEBUG: Menu initialized.");
         }
 
         private void buttonDrawRoad_Click(object sender, EventArgs e)
         {
+            //Initialize graphics for line drawing and calculate the route.
             g = mapImage.CreateGraphics();
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
             LinkedList<Node> route = Program.shortestPath(Program.findCity(startPlate), Program.findCity(endPlate), passenger);
             outputTextBox.Text = "Route: " + Program.getList(route);
 
-            //Redraw pins that are not lit with the selection.
+            //Redraw pins that are not lit with the selection and clear any lines already drawn.
             mapImage.Refresh();
             for (int i = 1; i <= Program.cityArray.Length; i++)
             {
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
                 pin.Image = Properties.Resources.pin;
             }
-            //Light the new route pins. Draw the lines between them
+            //Light the new route pins. Connect them with lines in-between.
             int x=0, y=0;
             for (int i = 0; i < route.Count; i++)
             {
                 Node n = route.ElementAt(i);
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + (n.city.plate)];
-                pin.Image = Properties.Resources.pinLit;
-                if (i!=0)
+                if (i != 0 && i != route.Count - 1)
                 {
+                    pin.Image = Properties.Resources.pinLit;
                     g.DrawLine(pen, x, y, pin.Location.X+12, pin.Location.Y+12);
+                }
+                else if (i != 0)
+                {
+                    pin.Image = Properties.Resources.pinLitS;
+                    g.DrawLine(pen, x, y, pin.Location.X + 12, pin.Location.Y + 12);
+                }
+                else
+                {
+                    pin.Image = Properties.Resources.pinLitE;
                 }
                 x = pin.Location.X+12;
                 y = pin.Location.Y+12;
