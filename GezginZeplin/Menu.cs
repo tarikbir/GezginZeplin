@@ -37,6 +37,22 @@ namespace GezginZeplin
             pin.Controls.Add(pinPlate);
         }
 
+        private Point convertCoord(double lng, double lat)
+        {
+            /*
+            lng -= 25.9872; //Turkey longitude start
+            lat = 35.7465 - lat; //Turkey latitude start
+            double mapLongitude = 44.8519 - lng, mapLatitude = lat - 25.9872;
+            // Map x & y hard coded.
+            int x = (int)(974 * (lng / mapLongitude));
+            int y = (int)(427 * (lat / mapLatitude));
+            */
+            int y = 427 - (int)((lat - 35.7465) * 66.394);
+            int x = (int)((lng - 25.9872) * 51.6308);
+            return new Point(x, y);
+        }
+
+        //General variables
         public int startPlate=1;
         public int endPlate=1;
         public int passenger=5;
@@ -49,9 +65,8 @@ namespace GezginZeplin
             InitializeComponent();
             for (int i = 0; i < Program.cityArray.Length; i++)
             {
-                int y =  427 - (int)((Program.cityArray[i].city.lat-35.7465)*66.394);
-                int x = (int)((Program.cityArray[i].city.lng-25.9872)*51.6308);
-                drawPin(x, y, i+1);
+                Point p = convertCoord(Program.cityArray[i].city.lng, Program.cityArray[i].city.lat);
+                drawPin(p.X, p.Y, i+1);
             }
             Console.WriteLine("DEBUG: Menu initialized.");
         }
@@ -61,9 +76,9 @@ namespace GezginZeplin
             //Initialize graphics for line drawing and calculate the route.
             g = mapImage.CreateGraphics();
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-            LinkedList<Node> route = Program.shortestPath(Program.findCity(startPlate), Program.findCity(endPlate), passenger);
-            outputTextBox.Text = "Route: " + Program.getList(route);
-
+            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+            LinkedList<Node> route = Program.shortestPath(start, end, passenger);
+            
             //Redraw pins that are not lit with the selection and clear any lines already drawn.
             mapImage.Refresh();
             for (int i = 1; i <= Program.cityArray.Length; i++)
@@ -94,6 +109,44 @@ namespace GezginZeplin
                 x = pin.Location.X+12;
                 y = pin.Location.Y+12;
             }
+            outputTextBox.Text = "Route: "+Program.getList(route);
+        }
+
+        private void buttonCalculateSol_Click(object sender, EventArgs e)
+        {
+            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+            //First problem solution (passenger)
+            int firstQ = 5;
+            double price = 100d, maxProfit = 0d, fuelCostPerKM = 10d;
+            for (int i = 5; i <= 50; i++)
+            {
+                //For first problem i = passenger, since passenger is varied.
+                double income = price * i;
+                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
+                double profit = income - outcome;
+                if (maxProfit < profit)
+                {
+                    maxProfit = profit;
+                    firstQ = i;
+                }
+                //TODO: File output.
+                //Console.WriteLine("DEBUG: For "+i+" passengers income is: "+gain+" and price is: "+tempPrice);
+            }
+            //Second problem solution (price)
+            maxProfit = 0d;
+            for (int i = 10; i <= 50; i = i + 10)
+            {
+                //For second problem i*10 = passenger, since passenger is varied.
+                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
+                double income = (50 - outcome) / 100 + outcome;
+                double variedPrice = income / i;
+                //TODO: File output.
+                //Console.WriteLine("DEBUG: For " + i + " passengers income is: " + income + " and price is: " + variedPrice);
+            }
+
+            outputTextBox.Text = "Solution files have been updated.";
         }
 
         private void textBoxCityStart_TextChanged(object sender, EventArgs e)

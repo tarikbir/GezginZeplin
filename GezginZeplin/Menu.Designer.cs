@@ -42,13 +42,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxPassengers = new System.Windows.Forms.TextBox();
             this.mapImage = new System.Windows.Forms.PictureBox();
-            this.programBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.programBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.buttonCalculateSol = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mapImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // labelHead
@@ -63,12 +64,12 @@
             // 
             // outputTextBox
             // 
-            this.outputTextBox.Location = new System.Drawing.Point(993, 367);
+            this.outputTextBox.Location = new System.Drawing.Point(993, 219);
             this.outputTextBox.Multiline = true;
             this.outputTextBox.Name = "outputTextBox";
             this.outputTextBox.ReadOnly = true;
             this.outputTextBox.ShortcutsEnabled = false;
-            this.outputTextBox.Size = new System.Drawing.Size(315, 49);
+            this.outputTextBox.Size = new System.Drawing.Size(315, 197);
             this.outputTextBox.TabIndex = 5;
             this.outputTextBox.TabStop = false;
             // 
@@ -78,7 +79,7 @@
             this.buttonDrawRoad.Location = new System.Drawing.Point(1179, 186);
             this.buttonDrawRoad.Name = "buttonDrawRoad";
             this.buttonDrawRoad.Size = new System.Drawing.Size(101, 27);
-            this.buttonDrawRoad.TabIndex = 4;
+            this.buttonDrawRoad.TabIndex = 5;
             this.buttonDrawRoad.Text = "Draw Map";
             this.buttonDrawRoad.UseVisualStyleBackColor = true;
             this.buttonDrawRoad.Click += new System.EventHandler(this.buttonDrawRoad_Click);
@@ -165,10 +166,6 @@
             this.mapImage.TabStop = false;
             this.mapImage.Paint += new System.Windows.Forms.PaintEventHandler(this.mapImage_Paint);
             // 
-            // programBindingSource
-            // 
-            this.programBindingSource.DataSource = typeof(GezginZeplin.Program);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::GezginZeplin.Properties.Resources.pinLitS;
@@ -187,11 +184,27 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
+            // programBindingSource
+            // 
+            this.programBindingSource.DataSource = typeof(GezginZeplin.Program);
+            // 
+            // buttonCalculateSol
+            // 
+            this.buttonCalculateSol.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonCalculateSol.Location = new System.Drawing.Point(1025, 186);
+            this.buttonCalculateSol.Name = "buttonCalculateSol";
+            this.buttonCalculateSol.Size = new System.Drawing.Size(134, 27);
+            this.buttonCalculateSol.TabIndex = 4;
+            this.buttonCalculateSol.Text = "Calculate Solutions";
+            this.buttonCalculateSol.UseVisualStyleBackColor = true;
+            this.buttonCalculateSol.Click += new System.EventHandler(this.buttonCalculateSol_Click);
+            // 
             // Menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1327, 428);
+            this.Controls.Add(this.buttonCalculateSol);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.textBoxPassengers);
@@ -207,9 +220,9 @@
             this.Name = "Menu";
             this.Text = "Menu";
             ((System.ComponentModel.ISupportInitialize)(this.mapImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -230,5 +243,6 @@
         private System.Windows.Forms.TextBox textBoxPassengers;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button buttonCalculateSol;
     }
 }

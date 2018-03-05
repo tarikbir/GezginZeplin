@@ -23,8 +23,19 @@ namespace GezginZeplin
             return null;
         }
 
+        public static double distanceAsKM(LinkedList<Node> route)
+        {
+            double total=0;
+            for (int i = 1; i < route.Count; i++)
+            {
+                total += route.ElementAt(i).distanceTo(route.ElementAt(i - 1));
+            }
+            return total;
+        }
+
         public static LinkedList<Node> shortestPath(Node start, Node end, int yolcu)
         {
+            
             double[,] weights = new double[81,2]; //PLATE, WEIGHT/PREV.NODE
             bool[] visited = new bool[81];
             bool done = false;
@@ -35,21 +46,41 @@ namespace GezginZeplin
             weights[current.city.plate - 1, 0] = 0;
             weights[current.city.plate - 1, 1] = current.city.plate;
             visited[current.city.plate - 1] = true;
-            Console.WriteLine("DEBUG: Start plate: " + current.city.plate + " | End plate: " + end.city.plate);
+            //Console.WriteLine("DEBUG: Start plate: " + current.city.plate + " | End plate: " + end.city.plate);
             //Main loop
             while (!done)
             {
+              
                 //Getting the weights of adjacent cities
                 for (int i = 0; i < current.adjacent.Count; i++)
                 {
+<<<<<<< HEAD
+                    Node adjNode = findCity(current.adjacent.ElementAt(i));
+                    City adjCity = adjNode.city;
+                    int adjPlate = adjCity.plate;
+                    double d = current.distanceTo(adjNode); //Horizontal distance the zeppelin MUST travel (h)
+                    double h = d*Math.Tan(Math.PI/180*(80-yolcu)); //Most vertical distance the zeppelin can travel (d)
+                    double distance;
+                    if (d >= Math.Abs(current.city.altitude-adjCity.altitude))
+                    {
+                        distance = Math.Sqrt((h * h) + (d * d));
+                    }
+                    else
+                    {
+                        distance = 9999d;
+                    }
+
+=======
                     int adjPlate = current.adjacent.ElementAt(i);
                     double distance = current.distanceTo(findCity(adjPlate)); //Horizontal distance
                     double height = distance*Math.Tan(Math.PI/180*(80-yolcu)); //Vertical distance
+                    double hypotenuse =Math.Sqrt((Math.Pow(height, 2) + Math.Pow(distance, 2)));
+>>>>>>> 107b96fd24c62b08535d909183018c016cf835d1
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
                         weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
                         weights[adjPlate - 1, 1] = current.city.plate; //FROM
-                        //Console.WriteLine("Adjacent (" + current.city.plate + ") found at: " + adjPlate + " by the distance of " + weights[adjPlate - 1, 0] + " kms");
+                        //Console.WriteLine("DEBUG: Adjacent (" + current.city.plate + ") found at: " + adjPlate + " by the distance of " + weights[adjPlate - 1, 0] + " kms");
                     }
                 }
 
