@@ -146,7 +146,6 @@ namespace GezginZeplin
             using (StreamReader adjacent = new StreamReader(adjacentFileName))
             {
                 adjacent.ReadLine(); //Pass the first line
-                int i = 0;
                 while (!adjacent.EndOfStream)
                 {
                     string line = adjacent.ReadLine();
