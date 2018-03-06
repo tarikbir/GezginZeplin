@@ -35,7 +35,7 @@ namespace GezginZeplin
             return total;
         }
 
-        public static LinkedList<Node> shortestPath(Node start, Node end, int yolcu)
+        public static LinkedList<Node> shortestPath(Node start, Node end, int passenger)
         {
             double[,] weights = new double[81,2]; //PLATE, WEIGHT/PREV.NODE
             bool[] visited = new bool[81];
@@ -52,15 +52,29 @@ namespace GezginZeplin
             while (!done)
             {
                 //Getting the weights of adjacent cities
-                for (int i = 0; i < current.adjacent.Count; i++)
+                int adjCount = current.adjacent.Count;
+                for (int i = 0; i < adjCount; i++)
                 {
                     Node adjNode = findCity(current.adjacent.ElementAt(i));
                     City adjCity = adjNode.city;
                     int adjPlate = adjCity.plate;
                     double d = current.distanceTo(adjNode); //Horizontal distance the zeppelin MUST travel (h)
-                    double h = d*Math.Tan(Math.PI/180*(80-yolcu)); //Most vertical distance the zeppelin can travel (d)
-                    double distance;
-                    if (d >= Math.Abs(current.city.altitude-adjCity.altitude))
+                    double h, distance;
+                    if (current.city.plate == start.city.plate) //First city flight height
+                    {
+                        h = Math.Abs(current.city.altitude - adjCity.altitude - 50);
+                    }
+                    else if (current.city.plate == end.city.plate) //Last city flight height
+                    {
+                        h = Math.Abs(current.city.altitude - adjCity.altitude + 50);
+                    }
+                    else //Cities in-between
+                    {
+                        h = Math.Abs(current.city.altitude - adjCity.altitude);
+                    }
+                    double angle = Math.Atan(h / d)/Math.PI*180;
+                    //Console.WriteLine("DEBUG: Angle from "+current.city.plate+" to "+adjPlate+": " + angle);
+                    if (angle < (80-passenger))
                     {
                         distance = Math.Sqrt((h * h) + (d * d));
                     }

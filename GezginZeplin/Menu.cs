@@ -79,6 +79,7 @@ namespace GezginZeplin
         {
             //Redraw pins that are not lit with the selection and clear any lines already drawn.
             mapImage.Refresh();
+            if (route == null) return;
             for (int i = 1; i <= Program.cityArray.Length; i++)
             {
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
@@ -135,6 +136,7 @@ namespace GezginZeplin
                 //For first problem i = passenger, since passenger is varied.
                 double income = price * i;
                 LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                if (routeT == null) return;
                 double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
                 double profit = income - outcome;
                 if (maxProfit < profit)
@@ -151,6 +153,7 @@ namespace GezginZeplin
             {
                 //For second problem i*10 = passenger, since passenger is varied.
                 LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                if (routeT == null) return;
                 double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
                 double income = (50 - outcome) / 100 + outcome;
                 double variedPrice = income / i;
