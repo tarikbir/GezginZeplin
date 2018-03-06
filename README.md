@@ -1,2 +1,2 @@
 # GezginZeplin
-Kocaeli University Programming Lab 5
+A zeppelin traveling through cities with a nonsense, illogical algorithm.
