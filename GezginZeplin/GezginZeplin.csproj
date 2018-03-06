@@ -79,6 +79,7 @@
     <Content Include="map.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="map_2.png" />
     <Content Include="pin.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

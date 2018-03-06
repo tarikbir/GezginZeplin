@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,6 +12,7 @@ namespace GezginZeplin
     class Program
     {
         public static Node[] cityArray = new Node[81];
+        public static Stopwatch stopWatch = new Stopwatch();
 
         public static Node findCity(int plate)
         {
@@ -35,7 +37,6 @@ namespace GezginZeplin
 
         public static LinkedList<Node> shortestPath(Node start, Node end, int yolcu)
         {
-            
             double[,] weights = new double[81,2]; //PLATE, WEIGHT/PREV.NODE
             bool[] visited = new bool[81];
             bool done = false;
@@ -50,11 +51,9 @@ namespace GezginZeplin
             //Main loop
             while (!done)
             {
-              
                 //Getting the weights of adjacent cities
                 for (int i = 0; i < current.adjacent.Count; i++)
                 {
-<<<<<<< HEAD
                     Node adjNode = findCity(current.adjacent.ElementAt(i));
                     City adjCity = adjNode.city;
                     int adjPlate = adjCity.plate;
@@ -70,12 +69,6 @@ namespace GezginZeplin
                         distance = 9999d;
                     }
 
-=======
-                    int adjPlate = current.adjacent.ElementAt(i);
-                    double distance = current.distanceTo(findCity(adjPlate)); //Horizontal distance
-                    double height = distance*Math.Tan(Math.PI/180*(80-yolcu)); //Vertical distance
-                    double hypotenuse =Math.Sqrt((Math.Pow(height, 2) + Math.Pow(distance, 2)));
->>>>>>> 107b96fd24c62b08535d909183018c016cf835d1
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
                         weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
@@ -141,6 +134,7 @@ namespace GezginZeplin
             //Initialization
             string citiesFileName = "cities.txt";
             string adjacentFileName = "adjacent.txt";
+            stopWatch.Start();
 
             //File checks
             if (!File.Exists(citiesFileName))

@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace GezginZeplin
@@ -39,16 +41,16 @@ namespace GezginZeplin
 
         private Point convertCoord(double lng, double lat)
         {
-            /*
-            lng -= 25.9872; //Turkey longitude start
-            lat = 35.7465 - lat; //Turkey latitude start
-            double mapLongitude = 44.8519 - lng, mapLatitude = lat - 25.9872;
-            // Map x & y hard coded.
-            int x = (int)(974 * (lng / mapLongitude));
-            int y = (int)(427 * (lat / mapLatitude));
-            */
-            int y = 427 - (int)((lat - 35.7465) * 66.394);
-            int x = (int)((lng - 25.9872) * 51.6308);
+            int mapX = 974;
+            int mapY = 427;
+            double minLat = 35.4849;
+            double minLng = 26.0549;
+            double maxLat = 42.1104;
+            double maxLng = 44.8277;
+
+            int x = (int)(((lng - minLng) / (maxLng - minLng)) * (mapX - 1));
+            int y = mapY - (int)(((lat - minLat) / (maxLat - minLat)) * (mapY - 1));
+
             return new Point(x, y);
         }
 
@@ -57,6 +59,7 @@ namespace GezginZeplin
         public int endPlate=1;
         public int passenger=5;
         public static int pinCount = 0;
+        public static bool mapUsedOnce = false;
         private Graphics g;
         private Pen pen = new Pen(Color.DarkOliveGreen, 2f);
 
@@ -68,17 +71,12 @@ namespace GezginZeplin
                 Point p = convertCoord(Program.cityArray[i].city.lng, Program.cityArray[i].city.lat);
                 drawPin(p.X, p.Y, i+1);
             }
+            mapImage.ContextMenuStrip = contextMenuStrip1;
             Console.WriteLine("DEBUG: Menu initialized.");
         }
 
-        private void buttonDrawRoad_Click(object sender, EventArgs e)
+        private void drawMap(LinkedList<Node> route)
         {
-            //Initialize graphics for line drawing and calculate the route.
-            g = mapImage.CreateGraphics();
-            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
-            LinkedList<Node> route = Program.shortestPath(start, end, passenger);
-            
             //Redraw pins that are not lit with the selection and clear any lines already drawn.
             mapImage.Refresh();
             for (int i = 1; i <= Program.cityArray.Length; i++)
@@ -87,7 +85,7 @@ namespace GezginZeplin
                 pin.Image = Properties.Resources.pin;
             }
             //Light the new route pins. Connect them with lines in-between.
-            int x=0, y=0;
+            int x = 0, y = 0;
             for (int i = 0; i < route.Count; i++)
             {
                 Node n = route.ElementAt(i);
@@ -95,7 +93,7 @@ namespace GezginZeplin
                 if (i != 0 && i != route.Count - 1)
                 {
                     pin.Image = Properties.Resources.pinLit;
-                    g.DrawLine(pen, x, y, pin.Location.X+12, pin.Location.Y+12);
+                    g.DrawLine(pen, x, y, pin.Location.X + 12, pin.Location.Y + 12);
                 }
                 else if (i != 0)
                 {
@@ -106,15 +104,29 @@ namespace GezginZeplin
                 {
                     pin.Image = Properties.Resources.pinLitE;
                 }
-                x = pin.Location.X+12;
-                y = pin.Location.Y+12;
+                x = pin.Location.X + 12;
+                y = pin.Location.Y + 12;
             }
-            outputTextBox.Text = "Route: "+Program.getList(route);
+            mapUsedOnce = true; //Makes sure the map has been drawn once to be able to refresh without errors.
+        }
+
+        private void buttonDrawRoad_Click(object sender, EventArgs e)
+        {
+            Program.stopWatch.Restart();                                                    //Restarts time to enable time-calculations.
+            g = mapImage.CreateGraphics();                                                  //Readies ability to draw on MAP.
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;                        //Sets pen to dash style so lines look dashed.
+            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);    //Gets two nodes with start, end plates given.
+            LinkedList<Node> route = Program.shortestPath(start, end, passenger);           //Generates a short path from start to end.
+            drawMap(route);                                                                 //Draws the map with the route given.
+            Int64 time = Program.stopWatch.ElapsedMilliseconds;                             //Calls main stopWatch to get elapsed time.
+            outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) +
+                "\r\nRoute: " + Program.getList(route);                                     //Updates the outputBox to show info to user.
         }
 
         private void buttonCalculateSol_Click(object sender, EventArgs e)
         {
             Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+            Program.stopWatch.Restart();
             //First problem solution (passenger)
             int firstQ = 5;
             double price = 100d, maxProfit = 0d, fuelCostPerKM = 10d;
@@ -145,8 +157,8 @@ namespace GezginZeplin
                 //TODO: File output.
                 //Console.WriteLine("DEBUG: For " + i + " passengers income is: " + income + " and price is: " + variedPrice);
             }
-
-            outputTextBox.Text = "Solution files have been updated.";
+            Int64 time = Program.stopWatch.ElapsedMilliseconds;
+            outputTextBox.Text = String.Format("Process took {0} miliseconds.", time)+"\r\nSolution files have been updated.";
         }
 
         private void textBoxCityStart_TextChanged(object sender, EventArgs e)
@@ -233,9 +245,34 @@ namespace GezginZeplin
             textBoxPassengers.Text = passenger.ToString("D2");
         }
 
-        private void mapImage_Paint(object sender, PaintEventArgs e)
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            if (mapUsedOnce)
+            {
+                Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+                LinkedList<Node> route = Program.shortestPath(start, end, passenger);
+                drawMap(route);
+            }
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mapUsedOnce)
+            {
+                mapImage.Refresh();
+                for (int i = 1; i <= Program.cityArray.Length; i++)
+                {
+                    PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
+                    pin.Image = Properties.Resources.pin;
+                }
+                startPlate = 1;
+                textBoxCityStart.Text = startPlate.ToString("D2");
+                endPlate = 1;
+                textBoxCityEnd.Text = endPlate.ToString("D2");
+                passenger = 5;
+                textBoxPassengers.Text = passenger.ToString("D2");
+                outputTextBox.Text = "Cleared.";
+            }
         }
     }
 }

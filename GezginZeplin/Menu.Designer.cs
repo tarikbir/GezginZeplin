@@ -31,7 +31,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
             this.labelHead = new System.Windows.Forms.Label();
             this.outputTextBox = new System.Windows.Forms.TextBox();
             this.buttonDrawRoad = new System.Windows.Forms.Button();
@@ -41,14 +40,18 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxPassengers = new System.Windows.Forms.TextBox();
-            this.mapImage = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.programBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.buttonCalculateSol = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.mapImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.mapImage = new System.Windows.Forms.PictureBox();
+            this.programBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mapImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -153,41 +156,6 @@
             this.textBoxPassengers.TextChanged += new System.EventHandler(this.textBoxPassengers_TextChanged);
             this.textBoxPassengers.Leave += new System.EventHandler(this.textBoxPassengers_Leave);
             // 
-            // mapImage
-            // 
-            this.mapImage.BackColor = System.Drawing.Color.Transparent;
-            this.mapImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mapImage.Image = ((System.Drawing.Image)(resources.GetObject("mapImage.Image")));
-            this.mapImage.ImageLocation = "";
-            this.mapImage.Location = new System.Drawing.Point(0, 0);
-            this.mapImage.Name = "mapImage";
-            this.mapImage.Size = new System.Drawing.Size(974, 427);
-            this.mapImage.TabIndex = 0;
-            this.mapImage.TabStop = false;
-            this.mapImage.Paint += new System.Windows.Forms.PaintEventHandler(this.mapImage_Paint);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::GezginZeplin.Properties.Resources.pinLitS;
-            this.pictureBox1.Location = new System.Drawing.Point(1025, 63);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(24, 24);
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::GezginZeplin.Properties.Resources.pinLitE;
-            this.pictureBox2.Location = new System.Drawing.Point(1025, 101);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(24, 24);
-            this.pictureBox2.TabIndex = 11;
-            this.pictureBox2.TabStop = false;
-            // 
-            // programBindingSource
-            // 
-            this.programBindingSource.DataSource = typeof(GezginZeplin.Program);
-            // 
             // buttonCalculateSol
             // 
             this.buttonCalculateSol.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -198,6 +166,63 @@
             this.buttonCalculateSol.Text = "Calculate Solutions";
             this.buttonCalculateSol.UseVisualStyleBackColor = true;
             this.buttonCalculateSol.Click += new System.EventHandler(this.buttonCalculateSol_Click);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.refreshToolStripMenuItem,
+            this.resetToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(114, 48);
+            this.contextMenuStrip1.Text = "Menu";
+            // 
+            // refreshToolStripMenuItem
+            // 
+            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.refreshToolStripMenuItem.Text = "Refresh";
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // resetToolStripMenuItem
+            // 
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.resetToolStripMenuItem.Text = "Clear";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::GezginZeplin.Properties.Resources.pinLitE;
+            this.pictureBox2.Location = new System.Drawing.Point(1025, 101);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(24, 24);
+            this.pictureBox2.TabIndex = 11;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::GezginZeplin.Properties.Resources.pinLitS;
+            this.pictureBox1.Location = new System.Drawing.Point(1025, 63);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(24, 24);
+            this.pictureBox1.TabIndex = 10;
+            this.pictureBox1.TabStop = false;
+            // 
+            // mapImage
+            // 
+            this.mapImage.BackColor = System.Drawing.Color.Transparent;
+            this.mapImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.mapImage.Image = global::GezginZeplin.Properties.Resources.map_2;
+            this.mapImage.ImageLocation = "";
+            this.mapImage.Location = new System.Drawing.Point(0, 0);
+            this.mapImage.Name = "mapImage";
+            this.mapImage.Size = new System.Drawing.Size(974, 427);
+            this.mapImage.TabIndex = 0;
+            this.mapImage.TabStop = false;
+            // 
+            // programBindingSource
+            // 
+            this.programBindingSource.DataSource = typeof(GezginZeplin.Program);
             // 
             // Menu
             // 
@@ -219,9 +244,10 @@
             this.Controls.Add(this.mapImage);
             this.Name = "Menu";
             this.Text = "Menu";
-            ((System.ComponentModel.ISupportInitialize)(this.mapImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mapImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.programBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -244,5 +270,8 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button buttonCalculateSol;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
     }
 }
