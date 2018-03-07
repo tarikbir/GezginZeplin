@@ -121,7 +121,7 @@ namespace GezginZeplin
             drawMap(route);                                                                 //Draws the map with the route given.
             Int64 time = Program.stopWatch.ElapsedMilliseconds;                             //Calls main stopWatch to get elapsed time.
             outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) +
-                "\r\nRoute: " + Program.getList(route);                                     //Updates the outputBox to show info to user.
+                "\r\nRoute: " + Program.getList(route) + "\r\nTotal Distance: " + Program.distanceZeppelin(route, passenger);
         }
 
         private void buttonCalculateSol_Click(object sender, EventArgs e)
@@ -137,7 +137,7 @@ namespace GezginZeplin
                 double income = price * i;
                 LinkedList<Node> routeT = Program.shortestPath(start, end, i);
                 if (routeT == null) return;
-                double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
+                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
                 double profit = income - outcome;
                 if (maxProfit < profit)
                 {
@@ -154,7 +154,7 @@ namespace GezginZeplin
                 //For second problem i*10 = passenger, since passenger is varied.
                 LinkedList<Node> routeT = Program.shortestPath(start, end, i);
                 if (routeT == null) return;
-                double outcome = fuelCostPerKM * Program.distanceAsKM(routeT);
+                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
                 double income = (50 - outcome) / 100 + outcome;
                 double variedPrice = income / i;
                 //TODO: File output.

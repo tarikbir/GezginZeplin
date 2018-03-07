@@ -25,12 +25,50 @@ namespace GezginZeplin
             return null;
         }
 
-        public static double distanceAsKM(LinkedList<Node> route)
+        public static double distanceHorizontal(LinkedList<Node> route)
         {
             double total=0;
             for (int i = 1; i < route.Count; i++)
             {
                 total += route.ElementAt(i).distanceTo(route.ElementAt(i - 1));
+            }
+            return total;
+        }
+
+        public static double distanceZeppelin(LinkedList<Node> route, int passenger)
+        {
+            if (route == null) return Double.MaxValue;
+            double total = 0;
+            Node end = route.ElementAt(0);
+            Node start = route.ElementAt(route.Count - 1);
+            for (int i = 1; i < route.Count; i++)
+            {
+                double distance, h;
+                Node current = route.ElementAt(i-1);
+                Node next = route.ElementAt(i);
+                double d = current.distanceTo(next);
+                if (current.city.plate == start.city.plate) //First city flight height
+                {
+                    h = Math.Abs(current.city.altitude - next.city.altitude - 50);
+                }
+                else if (current.city.plate == end.city.plate) //Last city flight height
+                {
+                    h = Math.Abs(current.city.altitude - next.city.altitude + 50);
+                }
+                else //Cities in-between
+                {
+                    h = Math.Abs(current.city.altitude - next.city.altitude);
+                }
+                double angle = Math.Atan(h / d) / Math.PI * 180;
+                if (angle < (80 - passenger)) //Zeppelin can travel with load
+                {
+                    distance = Math.Sqrt((h * h) + (d * d));
+                }
+                else //Zeppelin can't travel with load
+                {
+                    distance = Double.MaxValue;
+                }
+                total += distance;
             }
             return total;
         }
@@ -49,6 +87,7 @@ namespace GezginZeplin
             visited[current.city.plate - 1] = true;
             //Console.WriteLine("DEBUG: Start plate: " + current.city.plate + " | End plate: " + end.city.plate);
             //Main loop
+            int debugLoopCounter = 0;
             while (!done)
             {
                 //Getting the weights of adjacent cities
@@ -74,13 +113,13 @@ namespace GezginZeplin
                     }
                     double angle = Math.Atan(h / d)/Math.PI*180;
                     //Console.WriteLine("DEBUG: Angle from "+current.city.plate+" to "+adjPlate+": " + angle);
-                    if (angle < (80-passenger))
+                    if (angle < (80-passenger)) //Zeppelin can travel with load
                     {
                         distance = Math.Sqrt((h * h) + (d * d));
                     }
-                    else
+                    else //Zeppelin can't travel with load
                     {
-                        distance = 9999d;
+                        distance = 99999d;
                     }
 
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
@@ -94,7 +133,7 @@ namespace GezginZeplin
                 //Find the minimum weight
                 double min = Double.MaxValue;
                 int nextPlate = current.city.plate;
-                for (int i = 0; i < 81; i++)
+                for (int i = 0; i < cityArray.Length; i++)
                 {
                     if (weights[i,0] < min && !visited[i])
                     {
@@ -110,8 +149,10 @@ namespace GezginZeplin
 
                 //Check for the end of the loop (Travel to each city in array).
                 done = true;
-                for (int i = 0; i < 81; i++){ if (weights[i, 0] == Double.MaxValue) { done = false;  break; } }
+                for (int i = 0; i < cityArray.Length; i++){ if (!visited[i]) { done = false;  break; } }
+                debugLoopCounter++;
             }
+            Console.WriteLine("Debug loop counter: " + debugLoopCounter);
             //Output
             int endPlate = end.city.plate;
             int writingPlate = endPlate;
@@ -125,7 +166,7 @@ namespace GezginZeplin
                 citiesToReturn.AddLast(findCity(writingPlate));
                 //Console.Write(writingPlate+" ");
             } while (writingPlate != start.city.plate);
-
+            if (distanceZeppelin(citiesToReturn, passenger) >= Double.MaxValue) return null;
             return citiesToReturn;
         }
 
