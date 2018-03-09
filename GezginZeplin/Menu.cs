@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace GezginZeplin
@@ -37,10 +39,27 @@ namespace GezginZeplin
             pin.Controls.Add(pinPlate);
         }
 
+        private Point convertCoord(double lng, double lat)
+        {
+            int mapX = 974;
+            int mapY = 427;
+            double minLat = 35.4849;
+            double minLng = 26.0549;
+            double maxLat = 42.1104;
+            double maxLng = 44.8277;
+
+            int x = (int)(((lng - minLng) / (maxLng - minLng)) * (mapX - 1));
+            int y = mapY - (int)(((lat - minLat) / (maxLat - minLat)) * (mapY - 1));
+
+            return new Point(x, y);
+        }
+
+        //General variables
         public int startPlate=1;
         public int endPlate=1;
         public int passenger=5;
         public static int pinCount = 0;
+        public static bool mapUsedOnce = false;
         private Graphics g;
         private Pen pen = new Pen(Color.DarkOliveGreen, 2f);
 
@@ -49,30 +68,25 @@ namespace GezginZeplin
             InitializeComponent();
             for (int i = 0; i < Program.cityArray.Length; i++)
             {
-                int y =  427 - (int)((Program.cityArray[i].city.lat-35.7465)*66.394);
-                int x = (int)((Program.cityArray[i].city.lng-25.9872)*51.6308);
-                drawPin(x, y, i+1);
+                Point p = convertCoord(Program.cityArray[i].city.lng, Program.cityArray[i].city.lat);
+                drawPin(p.X, p.Y, i+1);
             }
+            mapImage.ContextMenuStrip = contextMenuStrip1;
             Console.WriteLine("DEBUG: Menu initialized.");
         }
 
-        private void buttonDrawRoad_Click(object sender, EventArgs e)
+        private void drawMap(LinkedList<Node> route)
         {
-            //Initialize graphics for line drawing and calculate the route.
-            g = mapImage.CreateGraphics();
-            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-            LinkedList<Node> route = Program.shortestPath(Program.findCity(startPlate), Program.findCity(endPlate), passenger);
-            outputTextBox.Text = "Route: " + Program.getList(route);
-
             //Redraw pins that are not lit with the selection and clear any lines already drawn.
             mapImage.Refresh();
+            if (route == null) return;
             for (int i = 1; i <= Program.cityArray.Length; i++)
             {
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
                 pin.Image = Properties.Resources.pin;
             }
             //Light the new route pins. Connect them with lines in-between.
-            int x=0, y=0;
+            int x = 0, y = 0;
             for (int i = 0; i < route.Count; i++)
             {
                 Node n = route.ElementAt(i);
@@ -80,7 +94,7 @@ namespace GezginZeplin
                 if (i != 0 && i != route.Count - 1)
                 {
                     pin.Image = Properties.Resources.pinLit;
-                    g.DrawLine(pen, x, y, pin.Location.X+12, pin.Location.Y+12);
+                    g.DrawLine(pen, x, y, pin.Location.X + 12, pin.Location.Y + 12);
                 }
                 else if (i != 0)
                 {
@@ -91,9 +105,63 @@ namespace GezginZeplin
                 {
                     pin.Image = Properties.Resources.pinLitE;
                 }
-                x = pin.Location.X+12;
-                y = pin.Location.Y+12;
+                x = pin.Location.X + 12;
+                y = pin.Location.Y + 12;
             }
+            mapUsedOnce = true; //Makes sure the map has been drawn once to be able to refresh without errors.
+        }
+
+        private void buttonDrawRoad_Click(object sender, EventArgs e)
+        {
+            Program.stopWatch.Restart();                                                    //Restarts time to enable time-calculations.
+            g = mapImage.CreateGraphics();                                                  //Readies ability to draw on MAP.
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;                        //Sets pen to dash style so lines look dashed.
+            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);    //Gets two nodes with start, end plates given.
+            LinkedList<Node> route = Program.shortestPath(start, end, passenger);           //Generates a short path from start to end.
+            drawMap(route);                                                                 //Draws the map with the route given.
+            Int64 time = Program.stopWatch.ElapsedMilliseconds;                             //Calls main stopWatch to get elapsed time.
+            outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) +
+                "\r\nRoute: " + Program.getList(route) + "\r\nTotal Distance: " + Program.distanceZeppelin(route, passenger);
+        }
+
+        private void buttonCalculateSol_Click(object sender, EventArgs e)
+        {
+            Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+            Program.stopWatch.Restart();
+            //First problem solution (passenger)
+            int firstQ = 5;
+            double price = 100d, maxProfit = 0d, fuelCostPerKM = 10d;
+            for (int i = 5; i <= 50; i++)
+            {
+                //For first problem i = passenger, since passenger is varied.
+                double income = price * i;
+                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                if (routeT == null) return;
+                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
+                double profit = income - outcome;
+                if (maxProfit < profit)
+                {
+                    maxProfit = profit;
+                    firstQ = i;
+                }
+                //TODO: File output.
+                //Console.WriteLine("DEBUG: For "+i+" passengers income is: "+gain+" and price is: "+tempPrice);
+            }
+            //Second problem solution (price)
+            maxProfit = 0d;
+            for (int i = 10; i <= 50; i = i + 10)
+            {
+                //For second problem i*10 = passenger, since passenger is varied.
+                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
+                if (routeT == null) return;
+                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
+                double income = (50 - outcome) / 100 + outcome;
+                double variedPrice = income / i;
+                //TODO: File output.
+                //Console.WriteLine("DEBUG: For " + i + " passengers income is: " + income + " and price is: " + variedPrice);
+            }
+            Int64 time = Program.stopWatch.ElapsedMilliseconds;
+            outputTextBox.Text = String.Format("Process took {0} miliseconds.", time)+"\r\nSolution files have been updated.";
         }
 
         private void textBoxCityStart_TextChanged(object sender, EventArgs e)
@@ -180,9 +248,34 @@ namespace GezginZeplin
             textBoxPassengers.Text = passenger.ToString("D2");
         }
 
-        private void mapImage_Paint(object sender, PaintEventArgs e)
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            if (mapUsedOnce)
+            {
+                Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
+                LinkedList<Node> route = Program.shortestPath(start, end, passenger);
+                drawMap(route);
+            }
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mapUsedOnce)
+            {
+                mapImage.Refresh();
+                for (int i = 1; i <= Program.cityArray.Length; i++)
+                {
+                    PictureBox pin = (PictureBox)mapImage.Controls["pin" + i];
+                    pin.Image = Properties.Resources.pin;
+                }
+                startPlate = 1;
+                textBoxCityStart.Text = startPlate.ToString("D2");
+                endPlate = 1;
+                textBoxCityEnd.Text = endPlate.ToString("D2");
+                passenger = 5;
+                textBoxPassengers.Text = passenger.ToString("D2");
+                outputTextBox.Text = "Cleared.";
+            }
         }
     }
 }

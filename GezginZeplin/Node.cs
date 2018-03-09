@@ -38,5 +38,13 @@ namespace GezginZeplin
             double distance = 12742 * Math.Asin(Math.Sqrt(a));
             return distance;
         }
+
+        public double distanceTo(City city)
+        {
+            double p = Math.PI / 180;
+            double a = 0.5 - Math.Cos((city.lat - this.city.lat) * p) / 2 + Math.Cos(city.lat * p) * Math.Cos(this.city.lat * p) * (1 - Math.Cos((city.lng - this.city.lng) * p)) / 2;
+            double distance = 12742 * Math.Asin(Math.Sqrt(a));
+            return distance;
+        }
     }
 }
