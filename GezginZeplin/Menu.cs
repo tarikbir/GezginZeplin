@@ -92,10 +92,8 @@ namespace GezginZeplin
             int x = 0, y = 0;
             for (int i = 0; i < route.Count; i++)
             {
-                pen.ResetTransform();
                 Node n = route.ElementAt(i);
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + (n.city.plate)];
-                //Console.WriteLine("DRAWING: Plate: " + n.city.plate + " x: " + pin.Location.X + "(" + x + ") y: " + pin.Location.Y + "(" + y + ").");
                 if (i != 0 && i != route.Count-1)
                 {
                     pin.Image = Properties.Resources.pinLit;
@@ -132,8 +130,7 @@ namespace GezginZeplin
             Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
             Program.stopWatch.Restart();
             calculateSolutionOrder = !calculateSolutionOrder; //First click first question, second click second question.
-            //First problem solution (passenger)
-            if (calculateSolutionOrder)
+            if (calculateSolutionOrder) //First problem
             {
                 outputTextBox.Text = "";
                 int minimumPassenger = 5;
@@ -142,7 +139,6 @@ namespace GezginZeplin
                 {
                     for (int p = 5; p <= 50; p++)
                     {
-                        //For first problem i = passenger, since passenger is varied.
                         double income = price * p;
                         LinkedList<Node> routeT = Program.shortestPath(start, end, p);
                         if (routeT == null)
@@ -153,12 +149,8 @@ namespace GezginZeplin
                         {
                             double expense = fuelCost * Program.distanceZeppelin(routeT, p);
                             double profit = income - expense;
-                            if (maxProfit <= profit)
-                            {
-                                maxProfit = profit;
-                                minimumPassenger = p;
-                            }
-                            sw.WriteLine("For " + p + " passengers, the flight costs " + profit + ".");
+                            if (maxProfit <= profit) { maxProfit = profit; minimumPassenger = p; }
+                            sw.WriteLine("For " + p + " passengers, the flight costs ₺" + profit + ".");
                         }
                     }
                 }
@@ -168,10 +160,10 @@ namespace GezginZeplin
                 Int64 time = Program.stopWatch.ElapsedMilliseconds;
                 outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) + "\r\nFirst Question:\r\nTo achieve maximum profit, " +
                     "how many passengers can be carried with a fixed cost? (at least 5 and at most 50 can be carried)\r\nDrawing the map for most profitable one.\r\n" +
-                    "Minimum Passengers: " + minimumPassenger + " passengers with shown route.\r\nDistance: " + distance + " kms.\r\n" +
-                    "Maximum Profit: ₺" + String.Format("{0:0.0#}", (price * minimumPassenger - fuelCost * distance));
+                    "Minimum Passengers: " + minimumPassenger + " passengers with shown route.\r\n" + String.Format("Distance: {0:0.0#}", distance) + " kms.\r\n" +
+                    "Maximum Profit: ₺" + String.Format("{0:0.0#}", maxProfit);
             }
-            else //Second problem solution (price)
+            else //Second problem
             {
                 outputTextBox.Text = "";
                 int maximumPassenger = 5;
@@ -201,7 +193,7 @@ namespace GezginZeplin
                 Int64 time = Program.stopWatch.ElapsedMilliseconds;
                 outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) + "\r\nSecond Question:\r\nTo achieve %50 profit, " +
                     "how much should the cost be? (for 10,20,30,40,50 passengers)\r\nDrawing the map for the best result.\r\n" +
-                    "Cost for one: ₺" + bestCost + "\r\nFor " + maximumPassenger + " passengers.\r\nDistance: " + distance + " kms.";
+                    "Cost for one: ₺" + String.Format("{0:0.0#}",bestCost) + "\r\nFor " + maximumPassenger + " passengers.\r\n" + String.Format("Distance: {0:0.0#}",distance) + " kms.";
             }
         }
 

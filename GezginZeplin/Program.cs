@@ -16,11 +16,9 @@ namespace GezginZeplin
 
         public static Node findCity(int plate)
         {
-            //Console.WriteLine("findCity() searching for :" + plate);
             for (int i = 0; i < cityArray.Length; i++)
             {
-                if (cityArray[i].city.plate == plate)
-                    return cityArray[i];
+                if (cityArray[i].city.plate == plate) return cityArray[i];
             }
             return null;
         }
@@ -28,10 +26,7 @@ namespace GezginZeplin
         public static double distanceHorizontal(LinkedList<Node> route)
         {
             double total=0;
-            for (int i = 1; i < route.Count; i++)
-            {
-                total += route.ElementAt(i).distanceTo(route.ElementAt(i - 1));
-            }
+            for (int i = 1; i < route.Count; i++) total += route.ElementAt(i).distanceTo(route.ElementAt(i - 1));
             return total;
         }
 
@@ -39,7 +34,7 @@ namespace GezginZeplin
         {
             bool debug = false;
             if (route == null) return Double.MaxValue;
-            double total = 0;
+            double total = 0d;
             Node end = route.ElementAt(route.Count - 1);
             Node start = route.ElementAt(0);
             if (debug) Console.WriteLine("DEBUG: Checking distance between S: " + start + " E: " + end);
@@ -72,7 +67,7 @@ namespace GezginZeplin
 
         public static LinkedList<Node> shortestPath(Node start, Node end, int passenger)
         {
-            double[,] weights = new double[81,2]; //PLATE, WEIGHT/PREV.NODE
+            double[,] weights = new double[81,2]; //Weight table, plate by plate. 0- weights, 1- previous node
             bool[] visited = new bool[81];
             bool done = false;
             Node current = start;
@@ -82,9 +77,7 @@ namespace GezginZeplin
             weights[current.city.plate - 1, 0] = 0;
             weights[current.city.plate - 1, 1] = current.city.plate;
             visited[current.city.plate - 1] = true;
-            //Console.WriteLine("DEBUG: Start plate: " + current.city.plate + " | End plate: " + end.city.plate);
             //Main loop
-            int debugLoopCounter = 0;
             while (!done)
             {
                 //Getting the weights of adjacent cities
@@ -109,7 +102,6 @@ namespace GezginZeplin
                         h = Math.Abs(current.city.altitude - adjCity.altitude);
                     }
                     double angle = Math.Atan(h / d)/Math.PI*180;
-                    //Console.WriteLine("DEBUG: Angle from "+current.city.plate+" to "+adjPlate+": " + angle);
                     if (angle < (80-passenger)) //Zeppelin can travel with load
                     {
                         distance = Math.Sqrt((h * h) + (d * d));
@@ -118,43 +110,30 @@ namespace GezginZeplin
                     {
                         distance = Double.MaxValue-1;
                     }
-
+                    //If we find a shorter distance: 
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
                     {
                         weights[adjPlate - 1, 0] = weights[current.city.plate-1,0]+distance; //WEIGHT CALCULATION
                         weights[adjPlate - 1, 1] = current.city.plate; //FROM
-                        //Console.WriteLine("DEBUG: Adjacent (" + current.city.plate + ") found at: " + adjPlate + " by the distance of " + weights[adjPlate - 1, 0] + " kms");
                     }
                 }
-
                 //Find the minimum weight
                 double min = Double.MaxValue;
                 int nextPlate = current.city.plate;
                 for (int i = 0; i < cityArray.Length; i++)
                 {
-                    if (weights[i,0] <= min && !visited[i])
-                    {
-                        min = weights[i, 0];
-                        nextPlate = i+1;
-                    }
+                    if (weights[i, 0] <= min && !visited[i]) { min = weights[i, 0]; nextPlate = i + 1; }
                 }
-                //Console.WriteLine("Next city is: " + nextPlate+"\n");
-
                 //Initialize next iteration.
                 visited[nextPlate - 1] = true;
                 current = findCity(nextPlate);
-
                 //Check for the end of the loop (Travel to each city in array).
                 done = true;
                 for (int i = 0; i < cityArray.Length; i++){ if (!visited[i]) { done = false;  break; } }
-                debugLoopCounter++;
             }
-            //Console.WriteLine("Debug loop counter: " + debugLoopCounter);
             //Output
             int endPlate = end.city.plate;
             int writingPlate = endPlate;
-            //Console.WriteLine("wp:"+writingPlate + " ");
-            
             do
             {
                 if (writingPlate <= 0) return null;
@@ -171,9 +150,7 @@ namespace GezginZeplin
             string s = "";
             int n = array.Count;
             for (int i = 0; i < n-1; i++)
-            {
                 s = s + array.ElementAt(i).ToString() + " > "; //City plates except 0.
-            }
             s = s + array.ElementAt(n-1).ToString(); //Last one without the character ">".
             //Console.WriteLine("DEBUG: getList() returns :"+s);
             return s;
