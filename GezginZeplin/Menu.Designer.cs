@@ -192,7 +192,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = global::GezginZeplin.Properties.Resources.pinLitE;
+            this.pictureBox2.Image = global::GezginZeplin.Properties.Resources.pinLitRed;
             this.pictureBox2.Location = new System.Drawing.Point(1025, 101);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(24, 24);
@@ -201,7 +201,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::GezginZeplin.Properties.Resources.pinLitS;
+            this.pictureBox1.Image = global::GezginZeplin.Properties.Resources.pinLitGreen;
             this.pictureBox1.Location = new System.Drawing.Point(1025, 63);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(24, 24);

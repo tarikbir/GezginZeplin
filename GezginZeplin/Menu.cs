@@ -58,8 +58,9 @@ namespace GezginZeplin
         public int startPlate=1;
         public int endPlate=1;
         public int passenger=5;
-        public static int pinCount = 0;
-        public static bool mapUsedOnce = false;
+        private static int pinCount = 0;
+        private static bool mapUsedOnce = false;
+        private static bool calculateSolutionOrder = false;
         private Graphics g;
         private Pen pen = new Pen(Color.DarkOliveGreen, 2f);
 
@@ -72,6 +73,8 @@ namespace GezginZeplin
                 drawPin(p.X, p.Y, i+1);
             }
             mapImage.ContextMenuStrip = contextMenuStrip1;
+            g = mapImage.CreateGraphics(); //Readies ability to draw on MAP.
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash; //Sets pen to dash style so lines look dashed.
             Console.WriteLine("DEBUG: Menu initialized.");
         }
 
@@ -89,21 +92,23 @@ namespace GezginZeplin
             int x = 0, y = 0;
             for (int i = 0; i < route.Count; i++)
             {
+                pen.ResetTransform();
                 Node n = route.ElementAt(i);
                 PictureBox pin = (PictureBox)mapImage.Controls["pin" + (n.city.plate)];
-                if (i != 0 && i != route.Count - 1)
+                //Console.WriteLine("DRAWING: Plate: " + n.city.plate + " x: " + pin.Location.X + "(" + x + ") y: " + pin.Location.Y + "(" + y + ").");
+                if (i != 0 && i != route.Count-1)
                 {
                     pin.Image = Properties.Resources.pinLit;
                     g.DrawLine(pen, x, y, pin.Location.X + 12, pin.Location.Y + 12);
                 }
                 else if (i != 0)
                 {
-                    pin.Image = Properties.Resources.pinLitS;
+                    pin.Image = Properties.Resources.pinLitRed;
                     g.DrawLine(pen, x, y, pin.Location.X + 12, pin.Location.Y + 12);
                 }
                 else
                 {
-                    pin.Image = Properties.Resources.pinLitE;
+                    pin.Image = Properties.Resources.pinLitGreen;
                 }
                 x = pin.Location.X + 12;
                 y = pin.Location.Y + 12;
@@ -114,8 +119,6 @@ namespace GezginZeplin
         private void buttonDrawRoad_Click(object sender, EventArgs e)
         {
             Program.stopWatch.Restart();                                                    //Restarts time to enable time-calculations.
-            g = mapImage.CreateGraphics();                                                  //Readies ability to draw on MAP.
-            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;                        //Sets pen to dash style so lines look dashed.
             Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);    //Gets two nodes with start, end plates given.
             LinkedList<Node> route = Program.shortestPath(start, end, passenger);           //Generates a short path from start to end.
             drawMap(route);                                                                 //Draws the map with the route given.
@@ -128,40 +131,78 @@ namespace GezginZeplin
         {
             Node start = Program.findCity(startPlate), end = Program.findCity(endPlate);
             Program.stopWatch.Restart();
+            calculateSolutionOrder = !calculateSolutionOrder; //First click first question, second click second question.
             //First problem solution (passenger)
-            int firstQ = 5;
-            double price = 100d, maxProfit = 0d, fuelCostPerKM = 10d;
-            for (int i = 5; i <= 50; i++)
+            if (calculateSolutionOrder)
             {
-                //For first problem i = passenger, since passenger is varied.
-                double income = price * i;
-                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
-                if (routeT == null) return;
-                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
-                double profit = income - outcome;
-                if (maxProfit < profit)
+                outputTextBox.Text = "";
+                int minimumPassenger = 5;
+                double price = 100d, maxProfit=Double.MinValue, fuelCost = 10d;
+                using (StreamWriter sw = new StreamWriter("firstQ.txt", false))
                 {
-                    maxProfit = profit;
-                    firstQ = i;
+                    for (int p = 5; p <= 50; p++)
+                    {
+                        //For first problem i = passenger, since passenger is varied.
+                        double income = price * p;
+                        LinkedList<Node> routeT = Program.shortestPath(start, end, p);
+                        if (routeT == null)
+                        {
+                            sw.WriteLine("For " + p + " passengers, the flight path cannot be found.");
+                        }
+                        else
+                        {
+                            double expense = fuelCost * Program.distanceZeppelin(routeT, p);
+                            double profit = income - expense;
+                            if (maxProfit <= profit)
+                            {
+                                maxProfit = profit;
+                                minimumPassenger = p;
+                            }
+                            sw.WriteLine("For " + p + " passengers, the flight costs " + profit + ".");
+                        }
+                    }
                 }
-                //TODO: File output.
-                //Console.WriteLine("DEBUG: For "+i+" passengers income is: "+gain+" and price is: "+tempPrice);
+                LinkedList<Node> routeMin = Program.shortestPath(start, end, minimumPassenger);
+                drawMap(routeMin);
+                double distance = Program.distanceZeppelin(routeMin, minimumPassenger);
+                Int64 time = Program.stopWatch.ElapsedMilliseconds;
+                outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) + "\r\nFirst Question:\r\nTo achieve maximum profit, " +
+                    "how many passengers can be carried with a fixed cost? (at least 5 and at most 50 can be carried)\r\nDrawing the map for most profitable one.\r\n" +
+                    "Minimum Passengers: " + minimumPassenger + " passengers with shown route.\r\nDistance: " + distance + " kms.\r\n" +
+                    "Maximum Profit: ₺" + String.Format("{0:0.0#}", (price * minimumPassenger - fuelCost * distance));
             }
-            //Second problem solution (price)
-            maxProfit = 0d;
-            for (int i = 10; i <= 50; i = i + 10)
+            else //Second problem solution (price)
             {
-                //For second problem i*10 = passenger, since passenger is varied.
-                LinkedList<Node> routeT = Program.shortestPath(start, end, i);
-                if (routeT == null) return;
-                double outcome = fuelCostPerKM * Program.distanceHorizontal(routeT);
-                double income = (50 - outcome) / 100 + outcome;
-                double variedPrice = income / i;
-                //TODO: File output.
-                //Console.WriteLine("DEBUG: For " + i + " passengers income is: " + income + " and price is: " + variedPrice);
+                outputTextBox.Text = "";
+                int maximumPassenger = 5;
+                double bestCost = Double.MinValue, fuelCost = 10d;
+                using (StreamWriter sw = new StreamWriter("secondQ.txt", false))
+                {
+                    for (int p = 5; p <= 50; p++)
+                    {
+                        LinkedList<Node> routeT = Program.shortestPath(start, end, p);
+                        if (routeT == null)
+                        {
+                            sw.WriteLine("For " + p + " passengers, the flight path cannot be found.");
+                        }
+                        else
+                        {
+                            double outcome = fuelCost * Program.distanceZeppelin(routeT, p);
+                            double income = (50 - outcome) / 100 + outcome;
+                            double variedPrice = income / p;
+                            if (bestCost <= variedPrice) { bestCost = variedPrice; maximumPassenger = p; }
+                            sw.WriteLine("For " + p + " passengers ₺" + String.Format("{0:0.0#}", variedPrice) + ".");
+                        }                        
+                    }
+                }
+                LinkedList<Node> routeMin = Program.shortestPath(start, end, maximumPassenger);
+                drawMap(routeMin);
+                double distance = Program.distanceZeppelin(routeMin, maximumPassenger);
+                Int64 time = Program.stopWatch.ElapsedMilliseconds;
+                outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) + "\r\nSecond Question:\r\nTo achieve %50 profit, " +
+                    "how much should the cost be? (for 10,20,30,40,50 passengers)\r\nDrawing the map for the best result.\r\n" +
+                    "Cost for one: ₺" + bestCost + "\r\nFor " + maximumPassenger + " passengers.\r\nDistance: " + distance + " kms.";
             }
-            Int64 time = Program.stopWatch.ElapsedMilliseconds;
-            outputTextBox.Text = String.Format("Process took {0} miliseconds.", time)+"\r\nSolution files have been updated.";
         }
 
         private void textBoxCityStart_TextChanged(object sender, EventArgs e)
@@ -258,7 +299,7 @@ namespace GezginZeplin
             }
         }
 
-        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        private void clearMap()
         {
             if (mapUsedOnce)
             {
@@ -276,6 +317,11 @@ namespace GezginZeplin
                 textBoxPassengers.Text = passenger.ToString("D2");
                 outputTextBox.Text = "Cleared.";
             }
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clearMap();
         }
     }
 }

@@ -103,9 +103,9 @@ namespace GezginZeplin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pinLitE {
+        internal static System.Drawing.Bitmap pinLitGreen {
             get {
-                object obj = ResourceManager.GetObject("pinLitE", resourceCulture);
+                object obj = ResourceManager.GetObject("pinLitGreen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace GezginZeplin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pinLitS {
+        internal static System.Drawing.Bitmap pinLitRed {
             get {
-                object obj = ResourceManager.GetObject("pinLitS", resourceCulture);
+                object obj = ResourceManager.GetObject("pinLitRed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -37,39 +37,36 @@ namespace GezginZeplin
 
         public static double distanceZeppelin(LinkedList<Node> route, int passenger)
         {
+            bool debug = false;
             if (route == null) return Double.MaxValue;
             double total = 0;
-            Node end = route.ElementAt(0);
-            Node start = route.ElementAt(route.Count - 1);
+            Node end = route.ElementAt(route.Count - 1);
+            Node start = route.ElementAt(0);
+            if (debug) Console.WriteLine("DEBUG: Checking distance between S: " + start + " E: " + end);
             for (int i = 1; i < route.Count; i++)
             {
-                double distance, h;
+                double h;
                 Node current = route.ElementAt(i-1);
                 Node next = route.ElementAt(i);
                 double d = current.distanceTo(next);
+                if (debug) Console.WriteLine(current + " > " + next + "(C " + current.city.plate + " == " + next.city.plate + " N)");
                 if (current.city.plate == start.city.plate) //First city flight height
                 {
-                    h = Math.Abs(current.city.altitude - next.city.altitude - 50);
+                    h = Math.Abs(current.city.altitude - (next.city.altitude + 50));
                 }
-                else if (current.city.plate == end.city.plate) //Last city flight height
+                else if (next.city.plate == end.city.plate) //Last city flight height
                 {
-                    h = Math.Abs(current.city.altitude - next.city.altitude + 50);
+                    h = Math.Abs(current.city.altitude - (next.city.altitude - 50));
                 }
                 else //Cities in-between
                 {
                     h = Math.Abs(current.city.altitude - next.city.altitude);
                 }
                 double angle = Math.Atan(h / d) / Math.PI * 180;
-                if (angle < (80 - passenger)) //Zeppelin can travel with load
-                {
-                    distance = Math.Sqrt((h * h) + (d * d));
-                }
-                else //Zeppelin can't travel with load
-                {
-                    distance = Double.MaxValue;
-                }
-                total += distance;
+                if (debug) Console.WriteLine("Angle: " + angle + " | d: " + d + " Altitude: " + h);
+                total += Math.Sqrt((h * h) + (d * d));
             }
+            if (debug) Console.WriteLine("Distance: " + total);
             return total;
         }
 
@@ -101,11 +98,11 @@ namespace GezginZeplin
                     double h, distance;
                     if (current.city.plate == start.city.plate) //First city flight height
                     {
-                        h = Math.Abs(current.city.altitude - adjCity.altitude - 50);
+                        h = Math.Abs(current.city.altitude - (adjCity.altitude + 50));
                     }
                     else if (current.city.plate == end.city.plate) //Last city flight height
                     {
-                        h = Math.Abs(current.city.altitude - adjCity.altitude + 50);
+                        h = Math.Abs(current.city.altitude - (adjCity.altitude - 50));
                     }
                     else //Cities in-between
                     {
@@ -119,7 +116,7 @@ namespace GezginZeplin
                     }
                     else //Zeppelin can't travel with load
                     {
-                        distance = 99999d;
+                        distance = Double.MaxValue-1;
                     }
 
                     if (distance+weights[current.city.plate - 1, 0] < weights[adjPlate-1, 0] && !visited[adjPlate-1])
@@ -135,7 +132,7 @@ namespace GezginZeplin
                 int nextPlate = current.city.plate;
                 for (int i = 0; i < cityArray.Length; i++)
                 {
-                    if (weights[i,0] < min && !visited[i])
+                    if (weights[i,0] <= min && !visited[i])
                     {
                         min = weights[i, 0];
                         nextPlate = i+1;
@@ -152,21 +149,19 @@ namespace GezginZeplin
                 for (int i = 0; i < cityArray.Length; i++){ if (!visited[i]) { done = false;  break; } }
                 debugLoopCounter++;
             }
-            Console.WriteLine("Debug loop counter: " + debugLoopCounter);
+            //Console.WriteLine("Debug loop counter: " + debugLoopCounter);
             //Output
             int endPlate = end.city.plate;
             int writingPlate = endPlate;
-            //Console.WriteLine("Fastest route: \n");
-            //Console.Write(writingPlate + " ");
-            citiesToReturn.AddLast(findCity(writingPlate));
-
+            //Console.WriteLine("wp:"+writingPlate + " ");
+            
             do
             {
+                if (writingPlate <= 0) return null;
+                citiesToReturn.AddFirst(findCity(writingPlate));
                 writingPlate = (int)weights[writingPlate - 1, 1];
-                citiesToReturn.AddLast(findCity(writingPlate));
-                //Console.Write(writingPlate+" ");
             } while (writingPlate != start.city.plate);
-            if (distanceZeppelin(citiesToReturn, passenger) >= Double.MaxValue) return null;
+            citiesToReturn.AddFirst(findCity(writingPlate)); //Add the starting city after the loop ends.
             return citiesToReturn;
         }
 
@@ -175,12 +170,12 @@ namespace GezginZeplin
             if (array == null) return "Cannot travel.";
             string s = "";
             int n = array.Count;
-            for (int i = n-1; i > 0; i--)
+            for (int i = 0; i < n-1; i++)
             {
-                s = s + array.ElementAt(i).ToString + " > "; //City plates except 0.
+                s = s + array.ElementAt(i).ToString() + " > "; //City plates except 0.
             }
-            s = s + array.ElementAt(0).ToString; //Last one without the character ">".
-            Console.WriteLine("DEBUG: getList() returns :"+s);
+            s = s + array.ElementAt(n-1).ToString(); //Last one without the character ">".
+            //Console.WriteLine("DEBUG: getList() returns :"+s);
             return s;
         }
 
