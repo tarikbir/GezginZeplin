@@ -101,7 +101,11 @@ namespace GezginZeplin
                     int adjPlate = adjCity.plate;
                     double d = current.distanceTo(adjNode); //Horizontal distance the zeppelin MUST travel (h)
                     double h, distance;
-                    if (current.city.plate == start.city.plate) //First city flight height
+                    if (current.city.plate == start.city.plate && adjCity.plate == end.city.plate) //If zeppelin travels first to last.
+                    {
+                        h = Math.Abs(current.city.altitude - adjCity.altitude);
+                    }
+                    else if(current.city.plate == start.city.plate) //First city flight height
                     {
                         h = Math.Abs(current.city.altitude - (adjCity.altitude + 50));
                     }
