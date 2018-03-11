@@ -26,6 +26,7 @@ namespace GezginZeplin
         public static double distanceHorizontal(LinkedList<Node> route)
         {
             double total=0;
+            if (route == null || route.Count <= 1) return 0d;
             for (int i = 1; i < route.Count; i++) total += route.ElementAt(i).distanceTo(route.ElementAt(i - 1));
             return total;
         }
