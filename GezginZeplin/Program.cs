@@ -34,6 +34,7 @@ namespace GezginZeplin
         {
             bool debug = false;
             if (route == null) return Double.MaxValue;
+            if (route.Count <= 1) return 0d;
             double total = 0d;
             Node end = route.ElementAt(route.Count - 1);
             Node start = route.ElementAt(0);
@@ -45,7 +46,11 @@ namespace GezginZeplin
                 Node next = route.ElementAt(i);
                 double d = current.distanceTo(next);
                 if (debug) Console.WriteLine(current + " > " + next + "(C " + current.city.plate + " == " + next.city.plate + " N)");
-                if (current.city.plate == start.city.plate) //First city flight height
+                if (current.city.plate == start.city.plate && next.city.plate == end.city.plate) //If zeppelin travels first to last.
+                {
+                    h = Math.Abs(current.city.altitude - next.city.altitude);
+                }
+                else if (current.city.plate == start.city.plate) //First city flight height
                 {
                     h = Math.Abs(current.city.altitude - (next.city.altitude + 50));
                 }
@@ -77,6 +82,12 @@ namespace GezginZeplin
             weights[current.city.plate - 1, 0] = 0;
             weights[current.city.plate - 1, 1] = current.city.plate;
             visited[current.city.plate - 1] = true;
+            //Exceptional situations
+            if (start == end) //Only 1 city to move.
+            {
+                citiesToReturn.AddFirst(start);
+                return citiesToReturn;
+            }
             //Main loop
             while (!done)
             {

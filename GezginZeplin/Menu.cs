@@ -122,7 +122,8 @@ namespace GezginZeplin
             drawMap(route);                                                                 //Draws the map with the route given.
             Int64 time = Program.stopWatch.ElapsedMilliseconds;                             //Calls main stopWatch to get elapsed time.
             outputTextBox.Text = String.Format("Process took {0} miliseconds.", time) +
-                "\r\nRoute: " + Program.getList(route) + "\r\nTotal Distance: " + Program.distanceZeppelin(route, passenger);
+                "\r\nRoute: " + Program.getList(route) + "\r\nTotal Distance: " + String.Format("{0:0.#} kms.",Program.distanceZeppelin(route, passenger)) + 
+                "\r\nHorizontal Distance: " + String.Format("{0:0.# kms}",Program.distanceHorizontal(route));
         }
 
         private void buttonCalculateSol_Click(object sender, EventArgs e)
